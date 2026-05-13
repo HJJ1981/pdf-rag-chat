@@ -1,0 +1,12 @@
+services:
+  rag-app:
+    build: .
+    ports:
+      - "7860:7860"
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GRADIO_SERVER_NAME=0.0.0.0
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./my_vector_db:/app/my_vector_db
+      - ./hf_cache:/app/hf_cache

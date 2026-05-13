@@ -1,0 +1,10 @@
+gradio
+PyPDF2
+sentence-transformers
+scikit-learn
+langchain
+langchain-google-genai
+langchain-text-splitters
+python-dotenv
+chromadb
+torch

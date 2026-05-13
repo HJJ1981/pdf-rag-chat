@@ -1,0 +1,6 @@
+.env
+my_vector_db/
+hf_cache/
+__pycache__/
+*.pdf
+.gradio/
