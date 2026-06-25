@@ -2,6 +2,19 @@
 
 A production-ready Retrieval-Augmented Generation (RAG) chatbot that allows users to chat with multiple PDF documents using semantic search and Google Gemini. The application stores document embeddings in a persistent ChromaDB vector database, eliminating the need to re-index previously uploaded documents.
 
+## Portfolio Project
+
+This project demonstrates practical skills in:
+
+- Retrieval-Augmented Generation (RAG)
+- Vector Databases (ChromaDB)
+- Embedding Models
+- LangChain Orchestration
+- Docker Containerization
+- LLM Application Development
+- Prompt Engineering
+- Semantic Search
+
 ---
 
 # 🌟 Features
