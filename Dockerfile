@@ -29,5 +29,11 @@ EXPOSE 7860
 # Set environment variable to ensure Gradio listens on all interfaces
 ENV GRADIO_SERVER_NAME="0.0.0.0"
 
+# Create a non-root user
+RUN useradd -m -u 1000 appuser
+RUN chown -R appuser:appuser /app
+# Run container as non-root user
+USER appuser
+
 # Command to run your app
 CMD ["python", "app.py"]

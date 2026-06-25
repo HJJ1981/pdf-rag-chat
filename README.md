@@ -1,36 +1,105 @@
-# 🚀 Persistent PDF RAG Chatbot
+# 🚀 Multi-PDF RAG Chatbot with Persistent Vector Memory
 
-A production-ready Retrieval-Augmented Generation (RAG) chatbot that allows you to "talk" to your PDF documents. This system leverages ChromaDB for persistent memory and Google Gemini for high-quality response generation.
-
----
-
-# 🌟 Key Features
-
-## Persistent Vector Memory
-Uses ChromaDB to store document embeddings locally, so you don't have to re-index the same PDF across different sessions.
-
-## Semantic Search
-Implements all-MiniLM-L6-v2 Sentence Transformers for accurate context retrieval.
-
-## Intelligent Chunking
-Utilizes LangChain’s RecursiveCharacterTextSplitter to maintain context window integrity.
-
-## Modern UI
-A clean, interactive interface powered by Gradio for seamless document uploading and chatting.
-
-## Containerized
-Fully Dockerized for consistent deployment across any environment.
+A production-ready Retrieval-Augmented Generation (RAG) chatbot that allows users to chat with multiple PDF documents using semantic search and Google Gemini. The application stores document embeddings in a persistent ChromaDB vector database, eliminating the need to re-index previously uploaded documents.
 
 ---
 
-# 🛠️ Tech Stack
+# 🌟 Features
 
-- LLM: Google Gemini API
-- Orchestration: LangChain
-- Vector Database: ChromaDB
-- Embeddings: Sentence Transformers (`all-MiniLM-L6-v2`)
-- Frontend: Gradio
-- Parsing: PyPDF2
+## 📚 Multi-PDF Knowledge Base
+
+Upload and index multiple PDF documents into a shared vector database. The chatbot can retrieve information across all indexed documents.
+
+## 💾 Persistent Vector Memory
+
+Uses ChromaDB Persistent Client to store embeddings locally, allowing indexed documents to remain available across application restarts.
+
+## 🔍 Semantic Search
+
+Leverages Sentence Transformers (`all-MiniLM-L6-v2`) to perform meaning-based retrieval rather than simple keyword matching.
+
+## 🧠 Retrieval-Augmented Generation (RAG)
+
+Retrieves relevant document chunks and grounds responses using Google Gemini.
+
+## 🏷️ Source Attribution
+
+Displays the source document(s) used to answer each question.
+
+## 🚫 Duplicate Detection
+
+Prevents the same PDF from being indexed multiple times.
+
+## 🐳 Dockerized Deployment
+
+Fully containerized for consistent deployment across development and production environments.
+
+## 🎨 User-Friendly Interface
+
+Built with Gradio for a simple drag-and-drop document upload experience.
+
+---
+
+# 🏗️ Architecture
+
+```text
+                    ┌─────────────┐
+                    │ PDF Upload  │
+                    └──────┬──────┘
+                           │
+                           ▼
+                  ┌────────────────┐
+                  │    PyPDF2      │
+                  │ Text Extraction│
+                  └───────┬────────┘
+                          │
+                          ▼
+           ┌──────────────────────────────┐
+           │ RecursiveCharacterTextSplitter│
+           └──────────────┬───────────────┘
+                          │
+                          ▼
+              ┌───────────────────────┐
+              │ Sentence Transformers │
+              │ all-MiniLM-L6-v2      │
+              └───────────┬───────────┘
+                          │
+                          ▼
+                ┌──────────────────┐
+                │     ChromaDB     │
+                │ Persistent Store │
+                └────────┬─────────┘
+                         │
+                         ▼
+                  User Question
+                         │
+                         ▼
+                 Similarity Search
+                         │
+                         ▼
+                 Relevant Chunks
+                         │
+                         ▼
+                  Google Gemini
+                         │
+                         ▼
+                   Final Answer
+```
+
+---
+
+# 🛠️ Technology Stack
+
+| Component        | Technology              |
+| ---------------- | ----------------------- |
+| LLM              | Google Gemini 2.5 Flash |
+| Framework        | LangChain               |
+| Vector Database  | ChromaDB                |
+| Embedding Model  | all-MiniLM-L6-v2        |
+| PDF Processing   | PyPDF2                  |
+| Frontend         | Gradio                  |
+| Containerization | Docker                  |
+| Language         | Python 3.10             |
 
 ---
 
@@ -38,45 +107,51 @@ Fully Dockerized for consistent deployment across any environment.
 
 ```plaintext
 pdf-rag-chat/
-├── my_vector_db/       # Persistent database storage
-├── app.py              # Main application logic
-├── Dockerfile          # Container configuration
-├── docker-compose.yml  # Multi-container orchestration
-├── requirements.txt    # Python dependencies
-└── .env                # API Keys (Not tracked by Git)
+├── .gradio/
+├── app.py
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── my_vector_db/
+├── hf_cache/
+├── README.md
+├── LICENSE
+└── .env
 ```
 
 ---
 
 # 🚀 Getting Started
 
-## 1. Prerequisites
+## Prerequisites
 
-- Python 3.10+ or Conda
-- A Google Gemini API Key
+* Python 3.10+
+* Docker (optional)
+* Google Gemini API Key
 
-Get your API key from Google AI Studio:
+Obtain an API key from:
+
 https://aistudio.google.com
 
 ---
 
-## 2. Installation & Setup
+# Installation
 
-### Clone the Repository
+## Clone Repository
 
 ```bash
 git clone https://github.com/HJ1981/pdf-rag-chat.git
 cd pdf-rag-chat
 ```
 
-### Create and Activate Environment
+## Create Environment
 
 ```bash
 conda create -n rag python=3.10 -y
 conda activate rag
 ```
 
-### Install Dependencies
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -84,9 +159,9 @@ pip install -r requirements.txt
 
 ---
 
-# ⚙️ Configuration
+# Configuration
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the project root:
 
 ```env
 GOOGLE_API_KEY=your_google_api_key_here
@@ -94,76 +169,160 @@ GOOGLE_API_KEY=your_google_api_key_here
 
 ---
 
-# ▶️ Running the Application
+# Running the Application
 
-## Via Python
+## Local Execution
 
 ```bash
 python app.py
 ```
 
-## Via Docker (Recommended)
+---
+
+## Docker Deployment
+
+Build and start the application:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
-Once running, access the application at:
+Application URL:
 
-```plaintext
+```text
 http://localhost:7860
+```
+
+Stop the application:
+
+```bash
+docker compose down
 ```
 
 ---
 
 # 🧠 How It Works
 
-## 1. Ingestion
-PyPDF2 extracts raw text from the uploaded PDF document.
+## Step 1: Document Ingestion
 
-## 2. Chunking
-Text is split into 1,000-character chunks with 200-character overlap to preserve context continuity.
+The uploaded PDF is processed using PyPDF2 to extract raw text.
 
-## 3. Vectorization
-Chunks are converted into embeddings using Sentence Transformers.
+## Step 2: Text Chunking
 
-## 4. Retrieval
-When a user asks a question, the system retrieves the most semantically relevant chunks from ChromaDB using cosine similarity.
+The document is split into chunks of:
 
-## 5. Generation
-The user query and retrieved chunks are passed into Google Gemini to generate grounded and context-aware responses.
+* Chunk Size: 1000 characters
+* Chunk Overlap: 200 characters
+
+This preserves contextual continuity during retrieval.
+
+## Step 3: Embedding Generation
+
+Each chunk is converted into a dense vector representation using:
+
+```text
+all-MiniLM-L6-v2
+```
+
+## Step 4: Persistent Storage
+
+Embeddings, chunks, and metadata are stored in ChromaDB.
+
+Metadata includes:
+
+```python
+{
+    "source": "filename.pdf"
+}
+```
+
+## Step 5: Similarity Search
+
+When a user submits a question:
+
+1. The question is embedded.
+2. ChromaDB performs vector similarity search.
+3. Top matching chunks are retrieved.
+
+## Step 6: Response Generation
+
+The retrieved context is passed to Google Gemini, which generates a grounded answer.
 
 ---
 
-# 📝 Example Queries
+# 💬 Example Questions
 
-- "Summarize the main arguments of this paper."
-- "What are the methodologies mentioned in Chapter 3?"
-- "Extract all key dates and deadlines from the document."
+* What services does ABC Bank provide?
+* Summarize the key findings of this report.
+* What are the eligibility criteria mentioned in the document?
+* Extract all important dates from the PDF.
+* Which document mentions Zimomo?
 
 ---
 
-# 💾 Persistent Database
+# 💾 Persistent Storage
 
-The vector database is stored locally in:
+The application stores data locally:
 
 ```plaintext
 ./my_vector_db
 ```
 
-This allows embeddings and indexed documents to persist between sessions.
+Benefits:
+
+* No re-indexing after restart
+* Faster startup
+* Persistent knowledge base
 
 ---
 
-# 🔒 Security Note
+# 🐳 Docker Persistence
 
-The `.env` file contains sensitive API keys and should NOT be committed to GitHub.
+The application persists:
 
-Add the following to your `.gitignore`:
+| Folder       | Purpose                  |
+| ------------ | ------------------------ |
+| my_vector_db | ChromaDB storage         |
+| hf_cache     | Hugging Face model cache |
+
+This prevents repeated model downloads and preserves indexed documents.
+
+---
+
+# ⚠️ Current Limitations
+
+* Supports text-based PDFs only
+* Scanned PDFs require OCR
+* Single-user deployment architecture
+* Depends on Gemini API availability and quota limits
+* No document management UI yet
+
+---
+
+# 🚀 Future Enhancements
+
+* OCR support using Tesseract
+* Hybrid Search (BM25 + Vector Search)
+* Conversation Memory
+* Document Management Dashboard
+* User Authentication
+* Cloud Deployment (AWS/GCP/Azure)
+* Citation Highlighting
+* Streaming Responses
+
+---
+
+# 🔒 Security
+
+Never commit secrets to GitHub.
+
+Add the following to `.gitignore`:
 
 ```gitignore
 .env
+.gradio/
 my_vector_db/
+hf_cache/
 ```
 
 ---
@@ -173,3 +332,17 @@ my_vector_db/
 This project is licensed under the MIT License.
 
 ---
+
+# 👨‍💻 Author
+
+HJJ1981
+
+GitHub:
+https://github.com/HJJ1981
+
+LinkedIn:
+https://www.linkedin.com/in/jian-jin-hu-69951243/
+
+---
+
+If you found this project useful, consider giving it a ⭐ on GitHub.
