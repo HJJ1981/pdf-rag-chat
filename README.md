@@ -129,6 +129,7 @@ pdf-rag-chat/
 ├── hf_cache/
 ├── README.md
 ├── LICENSE
+├── assets/
 └── .env
 ```
 
@@ -322,6 +323,29 @@ This prevents repeated model downloads and preserves indexed documents.
 * Cloud Deployment (AWS/GCP/Azure)
 * Citation Highlighting
 * Streaming Responses
+
+---
+
+# 📸 Screenshots
+
+Add screenshots here after deployment:
+
+assets/
+├── chatbot_response_1.png
+├── chatbot_response_2.png
+├── chatbot_response_3.png
+├── chatbot_response_4.png
+├── architecture.png
+
+Examples:
+
+![Chatbot Response](assets/chatbot_response_1.png)
+
+![Chatbot Response](assets/chatbot_response_2.png)
+
+![Chatbot Response](assets/chatbot_response_3.png)
+
+![Chatbot Response](assets/chatbot_response_4.png)
 
 ---
 

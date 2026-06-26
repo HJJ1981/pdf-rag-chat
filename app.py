@@ -1,4 +1,5 @@
 import os
+import string
 import uuid
 import chromadb
 import gradio as gr
@@ -64,6 +65,10 @@ def process_pdf(pdf_file):
                 "Is the PDF image-based?"
             )
 
+        print("Contains ZIMOMO:", "ZIMOMO" in text)
+        print("Contains Zimomo:", "Zimomo" in text)
+        print("Contains zimomo:", "zimomo" in text)
+
         filename = os.path.basename(pdf_file.name)
 
         chunks = splitter.split_text(text)
@@ -122,9 +127,13 @@ def process_pdf(pdf_file):
 
 def chat_response(message, history):
 
-    message_lower = message.lower().strip()
+    message_lower = (
+        message.lower()
+        .translate(str.maketrans("", "", string.punctuation))
+        .strip()
+    )
 
-    small_talk = [
+    small_talk = {
         "hi",
         "hello",
         "hey",
@@ -135,9 +144,9 @@ def chat_response(message, history):
         "thank you",
         "bye",
         "goodbye"
-    ]
+    }
    
-    if any(phrase in message_lower for phrase in small_talk):
+    if message_lower in small_talk:
         return llm.invoke(message).content
 
     collection = get_collection()
@@ -164,8 +173,18 @@ def chat_response(message, history):
     results = collection.query(
         query_embeddings=query_embedding,
         n_results=min(total_chunks, 3),
-        include=["documents", "metadatas"]
+        include=["documents", "metadatas", "distances"]
     )
+
+    print("\n===== Raw Query Results =====")
+    print("Metadatas:")
+    print(results["metadatas"])
+
+    print("\nDistances:")
+    print(results["distances"])
+
+    print("\nDocuments:")
+    print(results["documents"])
 
     if (
         not results["documents"]
@@ -179,13 +198,27 @@ def chat_response(message, history):
         if m is not None
     }
 
-    print(
-        f"Retrieved sources: {sources}"
-    )
+    print("\nRetrieved chunks:")
 
-    context = "\n\n".join(
-        results["documents"][0]
-    )
+    for i, (doc, meta, distance) in enumerate(
+        zip(results["documents"][0], results["metadatas"][0], results["distances"][0]), 1
+    ):
+        print(f"\nChunk {i}")
+        print("Source:", meta["source"])
+        print("Distance:", distance)
+        print(doc[:300])
+
+    context = ""
+
+    for i, (doc, meta) in enumerate(
+        zip(results["documents"][0], results["metadatas"][0]),
+        start=1,
+    ):
+        context += (
+            f"Document {i}\n"
+            f"Source: {meta['source']}\n"
+            f"{doc}\n\n"
+        )
 
     prompt = f"""
 You are a helpful assistant.
@@ -195,13 +228,24 @@ and simple conversational messages,
 respond naturally.
 
 For questions about uploaded documents,
-answer using the provided context.
+answer using only the retrieved context below.
 
-If the answer is not available
-in the context, say:
+If the answer is explicitly stated,
+extract it faithfully.
 
-"I cannot find that information
-in the uploaded documents."
+Do not add information that is not present
+in the retrieved context.
+
+If multiple documents or multiple entities
+contain similar information,
+choose the answer that is most directly
+supported by the retrieved context.
+
+If the retrieved context does not contain
+enough information to answer the question,
+reply exactly:
+
+"I cannot find that information in the uploaded documents."
 
 Context:
 {context}
@@ -213,6 +257,9 @@ Question:
     try:
 
         response = llm.invoke(prompt)
+
+        print("\n===== Prompt =====")
+        print(prompt)
 
         return (
             response.content
