@@ -215,8 +215,8 @@ def chat_response(message, history):
         start=1,
     ):
         context += (
-            f"Document {i}\n"
-            f"Source: {meta['source']}\n"
+            f"========== Chunk {i} ==========\n"
+            f"Source: {meta['source']}\n\n"
             f"{doc}\n\n"
         )
 
