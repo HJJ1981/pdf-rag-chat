@@ -206,7 +206,7 @@ def chat_response(message, history):
         print(f"\nChunk {i}")
         print("Source:", meta["source"])
         print("Distance:", distance)
-        print(doc[:300])
+        print(doc[:])
 
     context = ""
 
