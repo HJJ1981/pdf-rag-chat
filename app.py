@@ -206,7 +206,7 @@ def chat_response(message, history):
         print(f"\nChunk {i}")
         print("Source:", meta["source"])
         print("Distance:", distance)
-        print(doc[:])
+        print(doc[:]) # Print the entire document chunk
 
     context = ""
 

@@ -335,7 +335,6 @@ assets/
 ├── chatbot_response_2.png
 ├── chatbot_response_3.png
 ├── chatbot_response_4.png
-├── architecture.png
 
 Examples:
 
@@ -372,7 +371,7 @@ This project is licensed under the MIT License.
 
 # 👨‍💻 Author
 
-HJJ1981
+Hu Jian Jin
 
 GitHub:
 https://github.com/HJJ1981
