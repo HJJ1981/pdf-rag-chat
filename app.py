@@ -146,7 +146,7 @@ def chat_response(message, history):
         "goodbye"
     }
    
-    if message_lower in small_talk:
+    if any(keyword in message_lower for keyword in small_talk):
         return llm.invoke(message).content
 
     collection = get_collection()
@@ -186,10 +186,7 @@ def chat_response(message, history):
     print("\nDocuments:")
     print(results["documents"])
 
-    if (
-        not results["documents"]
-        or not results["documents"][0]
-    ):
+    if not results["documents"] or not results["documents"][0]:
         return "No relevant information found."
 
     sources = {
@@ -197,23 +194,22 @@ def chat_response(message, history):
         for m in results["metadatas"][0]
         if m is not None
     }
+ 
+    # 1. Initialize the context string
+    context = ""
 
     print("\nRetrieved chunks:")
 
+    # 2. Loop ONCE to handle both terminal logs and AI context generation
     for i, (doc, meta, distance) in enumerate(
-        zip(results["documents"][0], results["metadatas"][0], results["distances"][0]), 1
+        zip(results["documents"][0], results["metadatas"][0], results["distances"][0]), 
+        start=1
     ):
-        print(f"\nChunk {i}")
-        print("Source:", meta["source"])
-        print("Distance:", distance)
-        print(doc[:]) # Print the entire document chunk
+        # ---- Part A: Terminal Print (For You) ----
+        print(f"\nChunk {i} | Source: {meta['source']} | Distance: {distance}")
+        print(doc)
 
-    context = ""
-
-    for i, (doc, meta) in enumerate(
-        zip(results["documents"][0], results["metadatas"][0]),
-        start=1,
-    ):
+        # ---- Part B: Context String Builder (For Gemini) ----
         context += (
             f"========== Chunk {i} ==========\n"
             f"Source: {meta['source']}\n\n"
@@ -257,9 +253,6 @@ Question:
     try:
 
         response = llm.invoke(prompt)
-
-        print("\n===== Prompt =====")
-        print(prompt)
 
         return (
             response.content
